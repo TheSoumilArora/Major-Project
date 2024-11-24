@@ -32,8 +32,8 @@ void loop()
   int16_t reading = ads.readADC_Differential_0_1();
   uint16_t answer = reading + 32768;
 
-  Serial.print("Output: ");
-  Serial.print(answer);
+  Serial.print("Output_Module: ");
+  Serial.println(answer);
 
   Serial2.print("Output: ");
   Serial2.println(answer);
