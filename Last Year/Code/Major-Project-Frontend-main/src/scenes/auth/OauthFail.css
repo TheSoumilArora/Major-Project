@@ -1,0 +1,29 @@
+.oauth-fail {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	background-color: var(--secondary-color); /* Set the desired color */
+	color: var(--text-color); /* Set the desired color */
+}
+
+.oauth-fail h2 {
+	font-size: 2rem;
+	margin-bottom: 20px;
+}
+
+.oauth-fail p {
+	font-size: 1.2rem;
+	text-align: center;
+}
+
+.oauth-fail a {
+	color: var(--background-color); /* Set the desired color */
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.oauth-fail a:hover {
+	text-decoration: none;
+}

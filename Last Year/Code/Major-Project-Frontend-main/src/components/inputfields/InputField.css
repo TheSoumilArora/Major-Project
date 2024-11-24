@@ -1,0 +1,25 @@
+.input-field-container {
+	position: relative;
+	display: inline-block;
+}
+
+.input-field {
+	width: 100%;
+	padding: 20px 10px 10px 10px;
+	border: none;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: 400;
+	color: var(--accent-color-2);
+	background-color: var(--background-color);
+	transition: all 0.3s ease;
+	outline: none;
+	box-shadow: none;
+}
+
+.input-field--focused::placeholder,
+.input-field:not(:placeholder-shown)::placeholder {
+	font-size: 12px;
+	transform: translateY(-20px);
+	transition: all 0.3s ease;
+}
