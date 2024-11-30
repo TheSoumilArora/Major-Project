@@ -1,20 +1,17 @@
 #include <Adafruit_ADS1X15.h>
 #include <SPI.h>
 #include <Arduino.h>
+#include <Wire.h>
 
-Adafruit_ADS1115 ads;
-
-// Set the desired number of readings per second
-int readingsPerSecond = 25; // Adjust this value as needed
-int delayBetweenReadings = 1000 / readingsPerSecond;
+Adafruit_ADS1115 ads;  // Create an ADS1115 ADC object
 
 void setup()
 {
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial2.begin(115200);
-  Serial.println("Hello, I am working fine");
-  Serial2.println("Hello, I am working fine");
+
+Wire.setClock(400000);  // Set I2C clock to 400 kHz (fast mode)
 
   if (!ads.begin())
   {
@@ -22,6 +19,8 @@ void setup()
     Serial2.println("Failed to initialize ADS.");
     while (1);
   }
+  ads.setGain(GAIN_ONE); // This sets the gain to 1, which gives a range of ±4.096V
+  ads.setDataRate(RATE_ADS1115_860SPS); // This sets the data rate to 860 samples per second
 }
 
 void loop()
@@ -38,5 +37,5 @@ void loop()
   Serial2.print("Output: ");
   Serial2.println(answer);
 
-  delay(delayBetweenReadings);
+  delay(10);
 }
