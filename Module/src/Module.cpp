@@ -25,17 +25,21 @@ Wire.setClock(400000);  // Set I2C clock to 400 kHz (fast mode)
 
 void loop()
 {
-  Serial.print(">");
-  Serial2.print(">");
-  
   int16_t reading = ads.readADC_Differential_0_1();
   uint16_t answer = reading + 32768;
 
+  Serial.print(">");
   Serial.print("Output_Module: ");
   Serial.println(answer);
 
-  Serial2.print("Output: ");
-  Serial2.println(answer);
-
+  static int counter = 0;
+  if (counter % 5 == 0) {
+    Serial2.print(">");
+    Serial2.print("Output: ");
+    Serial2.println(answer);
+    counter = 0;
+  }
+  counter++;
+  
   delay(10);
 }
