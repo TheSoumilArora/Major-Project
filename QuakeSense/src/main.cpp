@@ -173,9 +173,7 @@ void loop() {
     Serial.write(mavlink_buffer, len);
 
     // Simulate a delay between sine wave data packets
-    if (millis() - last_sine_wave_time > 100) {
-      last_sine_wave_time = millis();
-    }
+    delay(10);
 
     break;
   }
