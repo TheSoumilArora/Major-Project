@@ -18,8 +18,10 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <common/mavlink.h>
+#include <math.h>
 
 #define OFFSET 32768
+#define SINE_WAVE_FREQUENCY 1.0 // Frequency of sine wave in Hz
 
 // Create an ADS1115 ADC object
 Adafruit_ADS1115 ads;
@@ -33,9 +35,12 @@ uint8_t target_component_id = 0; // Will be set after handshake
 // MAVLink message buffer
 uint8_t mavlink_buffer[MAVLINK_MAX_PACKET_LEN];
 
-/**
- * @brief Send a MAVLink heartbeat message.
- */
+// State machine states
+enum State { INIT, RUN, SEND_SINE_WAVE };
+
+State currentState = INIT; // Start in the INIT state
+
+// Function to send a MAVLink heartbeat message
 void sendHeartbeat(Stream *port) {
   mavlink_message_t msg;
   uint16_t len;
@@ -47,13 +52,7 @@ void sendHeartbeat(Stream *port) {
   port->write(mavlink_buffer, len);
 }
 
-/**
- * @brief Read MAVLink messages from port.
- *
- * @param msg Pointer to a MAVLink message structure to store the received
- * message.
- * @return true if a valid MAVLink message is received, false otherwise.
- */
+// Function to read MAVLink messages from port
 bool readMavlinkMessage(Stream *port, mavlink_message_t *msg) {
   static mavlink_status_t status;
   while (port->available() > 0) {
@@ -65,9 +64,7 @@ bool readMavlinkMessage(Stream *port, mavlink_message_t *msg) {
   return false;
 }
 
-/**
- * @brief Perform MAVLink handshake and negotiation to MAVLink 2.
- */
+// Function to perform MAVLink handshake
 void mavlinkHandshake() {
   mavlink_message_t msg;
 
@@ -93,50 +90,94 @@ void mavlinkHandshake() {
 void setup() {
   // Start serial communications
   Serial.begin(115200);
-  Serial2.begin(115200);
 
   // Set I2C clock speed to 400 kHz
   Wire.setClock(400000);
-
-  // Initialize ADS1115 and check for errors
-  if (!ads.begin()) {
-    Serial.println("Failed to initialize ADS.");
-    Serial2.println("Failed to initialize ADS.");
-    while (1)
-      ; // Enter infinite loop if initialization fails
+  // Attempt to initialize ADC
+  if (ads.begin()) {
+    // If ADC is initialized successfully, switch to RUN state
+    Serial.println("ADC initialized successfully.");
+    currentState = RUN;
+    Serial2.begin(115200);
+  } else {
+    // If ADC initialization fails, switch to SEND_SINE_WAVE state
+    Serial.println("Failed to initialize ADC. Sending sine wave data.");
+    currentState = SEND_SINE_WAVE;
   }
 
-  // Configure ADS1115 gain and sampling rate
-  ads.setGain(GAIN_ONE); // Gain set to ±4.096V range
-  ads.setDataRate(
-      RATE_ADS1115_860SPS); // Data rate set to 860 samples per second
-
-  // Perform MAVLink handshake and negotiation
-  mavlinkHandshake();
+  if (currentState == RUN) {
+    mavlinkHandshake();
+  }
 }
 
 void loop() {
-  // Send heartbeat periodically
   static uint32_t last_heartbeat_time = 0;
+  static uint32_t last_sine_wave_time = 0;
+  static int sine_index = 0;
+
+  // Send heartbeat periodically
   if (millis() - last_heartbeat_time > 1000) {
-    sendHeartbeat();
+    sendHeartbeat(&Serial2);
     last_heartbeat_time = millis();
   }
 
-  // Read differential data from channels 0 and 1
-  int16_t reading = ads.readADC_Differential_0_1();
+  // State machine logic
+  switch (currentState) {
+  case INIT: {
+    // Attempt to initialize ADC
+    if (ads.begin()) {
+      // If ADC is initialized successfully, switch to RUN state
+      Serial.println("ADC initialized successfully.");
+      currentState = RUN;
+    } else {
+      // If ADC initialization fails, switch to SEND_SINE_WAVE state
+      Serial.println("Failed to initialize ADC. Sending sine wave data.");
+      currentState = SEND_SINE_WAVE;
+    }
+    break;
+  }
 
-  // Add offset to raw reading to handle signed-to-unsigned conversion
-  uint16_t answer = reading + OFFSET;
+  case RUN: {
+    // Read differential data from channels 0 and 1
+    int16_t reading = ads.readADC_Differential_0_1();
 
-  // Send ADC data via MAVLink
-  mavlink_message_t msg;
-  uint16_t len;
-  mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING",
-                               answer, MAV_PARAM_TYPE_UINT16, 1, 0);
-  len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
-  Serial2.write(mavlink_buffer, len);
+    // Add offset to raw reading to handle signed-to-unsigned conversion
+    uint16_t answer = reading + OFFSET;
 
-  // Delay of 10 ms between iterations
-  delay(10);
+    // Send ADC data via MAVLink
+    mavlink_message_t msg;
+    uint16_t len;
+    mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING",
+                                 answer, MAV_PARAM_TYPE_UINT16, 1, 0);
+    len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
+    Serial2.write(mavlink_buffer, len);
+
+    // Delay of 10 ms between iterations
+    delay(10);
+    break;
+  }
+
+  case SEND_SINE_WAVE: {
+    // Generate sine wave data (simulated for testing)
+    float sine_wave_value =
+        32768.0 *
+        (1.0 + sin(2 * PI * SINE_WAVE_FREQUENCY * (millis() / 1000.0)));
+    uint16_t sine_wave_int = (uint16_t)sine_wave_value;
+
+    // Send sine wave data via MAVLink
+    mavlink_message_t msg;
+    uint16_t len;
+    mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING",
+                                 sine_wave_int, MAV_PARAM_TYPE_UINT16, 1, 0);
+    len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
+    Serial.write(mavlink_buffer, len);
+
+    // Simulate a delay between sine wave data packets
+    if (millis() - last_sine_wave_time > 100) {
+      last_sine_wave_time = millis();
+    }
+
+    break;
+  }
+  }
 }
