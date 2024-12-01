@@ -133,7 +133,7 @@ void loop()
       // Send ADC data via MAVLink (to Serial2)
       mavlink_message_t msg;
       uint16_t len;
-      mavlink_msg_param_value_pack(system_id, component_id, &msg, "Output_Value", calibrated_value, 9, 1, 0);
+      mavlink_msg_param_value_pack(system_id, component_id, &msg, "Output_Value", calibrated_value, MAV_PARAM_TYPE_REAL32, 1, 0);
       len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
       Serial2.write(mavlink_buffer, len);  // Send MAVLink data to Serial2
 
