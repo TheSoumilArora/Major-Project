@@ -1,0 +1,59 @@
+/* WelcomePage.css */
+.welcome-page {
+	max-width: 800px;
+	margin: 0 auto;
+	margin-top: 40px;
+	padding: 20px;
+	flex: 1;
+}
+
+.welcome-page-header {
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+h1 {
+	font-size: 36px;
+	color: #333;
+}
+
+p {
+	font-size: 18px;
+	color: #666;
+}
+
+main {
+	margin-bottom: 40px;
+}
+
+section {
+	margin-bottom: 30px;
+}
+
+h2 {
+	font-size: 24px;
+	color: #333;
+	margin-bottom: 10px;
+}
+
+.btn {
+	display: inline-block;
+	padding: 10px 20px;
+	border-radius: 5px;
+	text-decoration: none;
+	font-size: 18px;
+	color: #fff;
+}
+
+.btn-primary {
+	background-color: #007bff;
+}
+
+.btn-secondary {
+	background-color: #6c757d;
+}
+
+footer {
+	text-align: center;
+	color: #666;
+}

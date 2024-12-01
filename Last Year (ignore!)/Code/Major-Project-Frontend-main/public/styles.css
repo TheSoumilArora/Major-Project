@@ -1,0 +1,108 @@
+/* Global styles */
+
+:root {
+	--primary-color: #8858ed;
+	--secondary-color: #161b1c;
+	--tertiary-color: #1a1f21;
+	--accent-color-1: #374151;
+	--accent-color-2: #100030;
+	--accent-color-3: #7828a5;
+	--accent-color-4: #fb9e50;
+	--accent-color-5: #dd6e41;
+	--font-color: #8a8a98;
+	--background-color: #fffdfd;
+	--success-color: #008000;
+	--error-color: #a50021;
+	--warning-color: #ffc000;
+	--info-color: #33b5e5;
+}
+
+html, body {
+	background-color: #efead4;
+}
+
+body {
+	font-family: 'Muli', sans-serif;
+}
+
+a {
+	text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	padding: 0;
+	font-family: 'Quicksand', sans-serif;
+}
+
+h1 {
+	font-family: 'Comfortaa', sans-serif;
+	font-size: 6rem;
+	font-weight: 700;
+}
+
+h2 {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 3.75rem;
+	font-weight: bolder;
+	letter-spacing: 2px;
+}
+
+h3 {
+	font-size: 3rem;
+	font-weight: 700;
+}
+
+h4 {
+	font-size: 2.125rem;
+	font-weight: 700;
+}
+
+h5 {
+	font-size: 1.5rem;
+	font-weight: 700;
+}
+
+h6 {
+	font-size: 1.25rem;
+	font-weight: 700;
+}
+
+html {
+	scroll-behavior: smooth 500;
+}
+
+/* For Webkit browsers like Chrome/Safari */
+::-webkit-scrollbar {
+	width: 12px; /* Adjust scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+	background: var(--accent-color-1); /* Adjust track background */
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: var(--tertiary-color); /* Adjust thumb background */
+	border-radius: 10px; /* Add rounded corners to thumb */
+	border: 1px solid transparent; /* Creates a visual gap */
+	background-clip: padding-box; /* Ensures the background color doesn't bleed beyond the border */
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: var(
+		--secondary-color
+	); /* Adjust thumb background on hover */
+}
+
+/* For Firefox */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--accent-color-2) var(--accent-color-1); /* Adjust thumb and track color */
+}
+
+/* ... rest of your styles ... */

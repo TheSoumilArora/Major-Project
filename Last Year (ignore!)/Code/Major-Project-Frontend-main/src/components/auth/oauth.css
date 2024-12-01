@@ -1,0 +1,23 @@
+.login__social-button {
+	width: 100%;
+	margin-bottom: 10px;
+	background-color: var(--background-color); /* Set the desired color */
+	color: var(--primary-color); /* Set the desired color */
+	border: none;
+	border-radius: 30px;
+	padding: 10px 20px;
+	font-size: 1rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.login__social-button:focus {
+	outline: none;
+}
+
+.login__social-icon {
+	width: 20px;
+	height: 20px;
+	margin-right: 10px;
+	margin-bottom: 3px;
+}
