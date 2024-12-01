@@ -34,6 +34,11 @@ uint8_t target_component_id = 0; // Will be set after handshake
 // MAVLink message buffer
 uint8_t mavlink_buffer[MAVLINK_MAX_PACKET_LEN];
 
+float scaling_factor = 4.096 / 28.8;  // ADC range of 4.096V for ± and Geophone sensitivity of 28.8 V/m/s
+float r1 = 1e3;  // Resistance of R1 in Ohms
+float r2 = 6.47e3;  // Resistance of R2 in Ohms
+float voltage_divider_factor = r1 / (r1 + r2);  // Voltage divider ratio
+
 // State machine states
 enum State {INIT, RUN, SEND_SINE_WAVE};
 State currentState = INIT; // Start in the INIT state
@@ -101,7 +106,7 @@ void loop()
   // Track time elapsed since last heartbeat, sensor read, or sine wave transmission
   unsigned long currentMillis = millis();
 
-  // Handle heartbeat transmission every 1 second
+  // Handle heartbeat transmission
   if (currentMillis - last_heartbeat_time >= heartbeat_interval)
   {
     sendHeartbeat(&Serial2);  // Send heartbeat to Serial2 (MAVLink)
@@ -111,13 +116,16 @@ void loop()
   // State machine logic
   switch (currentState)
   {
+  
   case RUN:
   {
-    // Read sensor data every 50 ms
+    // Read sensor data from ADC
     if (currentMillis - last_sensor_read_time >= sensor_read_interval)
     {
-      int16_t reading = ads.readADC_Differential_0_1();
-      
+      int16_t raw_value = ads.readADC_Differential_0_1();
+      // Apply calibration: multiply the raw ADC value by the scaling factor and voltage divider compensation
+      float calibrated_value = raw_value * scaling_factor * voltage_divider_factor;
+
       // Serial.print(">");
       // Serial.print("Output_Module: ");
       // Serial.println(reading);
@@ -125,7 +133,7 @@ void loop()
       // Send ADC data via MAVLink (to Serial2)
       mavlink_message_t msg;
       uint16_t len;
-      mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING", (float)reading, MAV_PARAM_TYPE_INT16, 1, 0);
+      mavlink_msg_param_value_pack(system_id, component_id, &msg, "Output_Value", calibrated_value, MAV_PARAM_TYPE_INT16, 1, 0);
       len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
       Serial2.write(mavlink_buffer, len);  // Send MAVLink data to Serial2
 
@@ -153,5 +161,6 @@ void loop()
     }
     break;
   }
+
   }
 }
