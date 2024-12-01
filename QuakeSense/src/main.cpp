@@ -64,29 +64,6 @@ bool readMavlinkMessage(Stream *port, mavlink_message_t *msg) {
   return false;
 }
 
-// Function to perform MAVLink handshake
-void mavlinkHandshake() {
-  mavlink_message_t msg;
-
-  while (true) {
-    sendHeartbeat(&Serial2);
-    delay(100);
-
-    if (readMavlinkMessage(&Serial2, &msg)) {
-      if (msg.msgid == MAVLINK_MSG_ID_HEARTBEAT) {
-        mavlink_heartbeat_t heartbeat;
-        mavlink_msg_heartbeat_decode(&msg, &heartbeat);
-
-        target_system_id = msg.sysid;
-        target_component_id = msg.compid;
-
-        Serial.println("MAVLink handshake successful!");
-        return;
-      }
-    }
-  }
-}
-
 void setup() {
   // Start serial communications
   Serial.begin(115200);
@@ -104,10 +81,6 @@ void setup() {
     Serial.println("Failed to initialize ADC. Sending sine wave data.");
     currentState = SEND_SINE_WAVE;
   }
-
-  if (currentState == RUN) {
-    mavlinkHandshake();
-  }
 }
 
 void loop() {
@@ -117,7 +90,12 @@ void loop() {
 
   // Send heartbeat periodically
   if (millis() - last_heartbeat_time > 1000) {
-    sendHeartbeat(&Serial2);
+    if (currentState == RUN) {
+      sendHeartbeat(&Serial2);
+    } else {
+      sendHeartbeat(&Serial);
+    }
+
     last_heartbeat_time = millis();
   }
 
