@@ -1,3 +1,18 @@
+/**
+ * @file main.cpp
+ * @brief Arduino code to interface with the ADS1115 ADC module using I2C
+ * communication and transmit data via MAVLink protocol.
+ *
+ * This program initializes the ADS1115 ADC module, sets up the desired gain
+ * and sampling rate, and continuously reads differential data from channels 0
+ * and 1. The results are sent via MAVLink on Serial2. Additionally, it
+ * implements MAVLink heartbeat, handshake, and negotiation to MAVLink 2.
+ *
+ * @author TheSoumilArora
+ * @author Witty-Wizard
+ * @date 2024-12-01
+ */
+
 #include <Adafruit_ADS1X15.h>
 #include <Adafruit_BusIO_Register.h>
 #include <Arduino.h>
