@@ -126,14 +126,14 @@ void loop()
       // Apply calibration: multiply the raw ADC value by the scaling factor and voltage divider compensation
       float calibrated_value = raw_value * scaling_factor * voltage_divider_factor;
 
-      // Serial.print(">");
-      // Serial.print("Output_Module: ");
-      // Serial.println(reading);
+      Serial.print(">");
+      Serial.print("Output_Module: ");
+      Serial.println(calibrated_value);
 
       // Send ADC data via MAVLink (to Serial2)
       mavlink_message_t msg;
       uint16_t len;
-      mavlink_msg_param_value_pack(system_id, component_id, &msg, "Output_Value", calibrated_value, MAV_PARAM_TYPE_INT16, 1, 0);
+      mavlink_msg_param_value_pack(system_id, component_id, &msg, "Output_Value", calibrated_value, 9, 1, 0);
       len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
       Serial2.write(mavlink_buffer, len);  // Send MAVLink data to Serial2
 

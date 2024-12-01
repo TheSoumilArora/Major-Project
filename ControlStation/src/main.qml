@@ -142,7 +142,7 @@ ApplicationWindow {
             target: mavlinkHandler
             function onAdc_value_signal(adc_value)
             {
-                console.log("Received ADC value:", adc_value)
+                console.log("Ground Velocity:", adc_value)
                 chartUpdater.updateChart(adc_value)
             }
         }
@@ -153,7 +153,7 @@ ApplicationWindow {
         }
     }
 
-    // ChartView for displaying ADC values
+    // ChartView for displaying Ground Velocity
     ChartView {
         id: chartView
         width: parent.width - 220 // Adjust width to fit inside the sidebar
@@ -161,10 +161,10 @@ ApplicationWindow {
         anchors.top: parent.top
         anchors.right: parent.right
 
-        // Line series to plot ADC values
+        // Line series to plot Ground Velocity
         LineSeries {
             id: adcSeries
-            name: "ADC Values"
+            name: "Ground Velocity"
             color: "#2980b9"
             axisX: ValueAxis {
                 id: axisX

@@ -29,7 +29,7 @@ class MAVLinkThread(QThread):
     def handle_message(self, msg):
         """Handle incoming MAVLink messages."""
         if msg.get_type() == "PARAM_VALUE":
-            # Check if the message is the ADC reading
+            # Check if the message is the Output_Value parameter
             if msg.param_id == "Output_Value":
                 adc_value = msg.param_value
                 
@@ -56,6 +56,5 @@ class MAVLinkHandler(QObject):
 
     @Slot(float)
     def on_adc_value_received(self, adc_value):
-        """Receive the ADC value from the MAVLink thread."""
-        # Here you can do additional processing with the ADC value or forward it to QML
+        """Receive the ground velocity from the MAVLink thread."""
         self.adc_value_signal.emit(adc_value)
