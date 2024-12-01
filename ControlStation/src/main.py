@@ -8,7 +8,6 @@ from PySide6.QtCore import QObject, Signal, QTimer
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtWidgets import QApplication
 
-
 def main():
     app = QApplication(sys.argv)
 
@@ -31,7 +30,6 @@ def main():
         sys.exit(-1)
 
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()

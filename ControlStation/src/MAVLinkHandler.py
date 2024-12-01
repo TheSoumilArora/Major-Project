@@ -32,6 +32,7 @@ class MAVLinkThread(QThread):
             # Check if the message is the ADC reading
             if msg.param_id == "ADC_READING":
                 adc_value = msg.param_value
+                
                 # Emit signal to update the QML frontend
                 self.adc_value_signal.emit(adc_value)
 

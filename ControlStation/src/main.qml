@@ -11,7 +11,8 @@ ApplicationWindow {
     Material.theme: Material.Light
 
     // Background Color
-    Rectangle {
+    Rectangle
+    {
         anchors.fill: parent
         color: "#ffffff"  // Darker background color for the main window
     }
@@ -23,7 +24,8 @@ ApplicationWindow {
         color: "#34495e"  // Slightly lighter shade for sidebar
 
         // Title
-        Text {
+        Text
+        {
             text: "Control Panel"
             color: "white"
             font.bold: true
@@ -34,7 +36,8 @@ ApplicationWindow {
         }
 
         // ComboBox for serial ports
-        ComboBox {
+        ComboBox
+        {
             id: comboBox
             width: parent.width - 20
             height: 40
@@ -94,7 +97,8 @@ ApplicationWindow {
         }
 
         // Connect button for initiating connection
-        Button {
+        Button
+        {
             text: "Connect"
             width: parent.width - 20
             height: 40
@@ -120,7 +124,8 @@ ApplicationWindow {
         }
 
         // Connections to listen to the availablePortsSignal
-        Connections {
+        Connections
+        {
             target: serialPortHandler
             function onAvailablePortsSignal(availablePorts)
             {
@@ -164,8 +169,8 @@ ApplicationWindow {
             axisX: ValueAxis {
                 id: axisX
                 min: 0
-                max: 1000 // Adjust as needed based on the number of points you plan to show
-                tickCount: 10
+                max: 100 // Adjust as needed based on the number of points you plan to show
+                tickCount: 100
             }
             axisY: ValueAxis {
                 id: axisY

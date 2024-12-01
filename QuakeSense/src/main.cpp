@@ -26,7 +26,7 @@
 Adafruit_ADS1115 ads;
 
 // Delay between run cycles in milliseconds
-uint8_t delayTime = 5;
+uint8_t delayTime = 25;
 
 // MAVLink parameters
 uint8_t system_id = 1;           // ID of this system
@@ -130,9 +130,9 @@ void loop()
     // Send ADC data via MAVLink
     mavlink_message_t msg;
     uint16_t len;
-    mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING",
-                                 reading, MAV_PARAM_TYPE_INT16, 1, 0);
+    mavlink_msg_param_value_pack(system_id, component_id, &msg, "ADC_READING", (float)reading, MAV_PARAM_TYPE_INT16, 1, 0);
     len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
+    
     Serial2.write(mavlink_buffer, len);
 
     // Delay between iterations
