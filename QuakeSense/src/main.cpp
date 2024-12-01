@@ -25,6 +25,9 @@
 // Create an ADS1115 ADC object
 Adafruit_ADS1115 ads;
 
+// Delay between run cycles in milliseconds
+uint8_t delayTime = 5;
+
 // MAVLink parameters
 uint8_t system_id = 1;           // ID of this system
 uint8_t component_id = 1;        // ID of this component
@@ -36,7 +39,6 @@ uint8_t mavlink_buffer[MAVLINK_MAX_PACKET_LEN];
 
 // State machine states
 enum State {INIT, RUN, SEND_SINE_WAVE};
-
 State currentState = INIT; // Start in the INIT state
 
 // Function to send a MAVLink heartbeat message
@@ -133,8 +135,8 @@ void loop()
     len = mavlink_msg_to_send_buffer(mavlink_buffer, &msg);
     Serial2.write(mavlink_buffer, len);
 
-    // Delay of 10 ms between iterations
-    delay(10);
+    // Delay between iterations
+    delay(delayTime);
     break;
   }
 
@@ -155,7 +157,7 @@ void loop()
     Serial.write(mavlink_buffer, len);
 
     // Simulate a delay between sine wave data packets
-    delay(10);
+    delay(delayTime);
 
     break;
   }
