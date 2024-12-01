@@ -41,9 +41,11 @@ void sendHeartbeat(Stream *port)
 bool readMavlinkMessage(Stream *port, mavlink_message_t *msg)
 {
   static mavlink_status_t status;
-  while (port->available() > 0) {
+  while (port->available() > 0)
+  {
     uint8_t c = port->read();
-    if (mavlink_parse_char(MAVLINK_COMM_0, c, msg, &status)) {
+    if (mavlink_parse_char(MAVLINK_COMM_0, c, msg, &status))
+    {
       return true;
     }
   }
@@ -58,12 +60,16 @@ void setup()
   // Set I2C clock speed to 400 kHz
   Wire.setClock(400000);
   // Attempt to initialize ADC
-  if (ads.begin()) {
+  if (ads.begin())
+  {
     // If ADC is initialized successfully, switch to RUN state
     Serial.println("ADC initialized successfully.");
     currentState = RUN;
     Serial2.begin(115200);
-  } else {
+  }
+  
+  else
+  {
     // If ADC initialization fails, switch to SEND_SINE_WAVE state
     Serial.println("Failed to initialize ADC. Sending sine wave data.");
     currentState = SEND_SINE_WAVE;
@@ -82,7 +88,9 @@ void loop()
     if (currentState == RUN)
     {
       sendHeartbeat(&Serial2);
-    } else
+    }
+    
+    else
     {
       sendHeartbeat(&Serial);
     }
