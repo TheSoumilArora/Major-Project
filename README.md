@@ -1,16 +1,16 @@
 # QuakeSense
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/Witty-Wizard/QuakeSense" alt="GitHub Release">
-  <img src="https://img.shields.io/github/stars/Witty-Wizard/QuakeSense?style=flat" alt="GitHub Repo stars">
-  <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/Witty-Wizard/QuakeSense">
-  <img alt="GitHub forks" src="https://img.shields.io/github/forks/Witty-Wizard/QuakeSense?style=flat">
-  <img src="https://img.shields.io/github/license/Witty-Wizard/QuakeSense" alt="GitHub License">
+  <img src="https://img.shields.io/github/v/release/TheSoumilArora/Major-Project" alt="GitHub Release">
+  <img src="https://img.shields.io/github/stars/TheSoumilArora/Major-Project?style=flat" alt="GitHub Repo stars">
+  <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/TheSoumilArora/Major-Project">
+  <img alt="GitHub forks" src="https://img.shields.io/github/forks/TheSoumilArora/Major-Project?style=flat">
+  <img src="https://img.shields.io/github/license/TheSoumilArora/Major-Project" alt="GitHub License">
 </p>
 
 ## Overview
 
-This project measures the Sesmic activity using a geophone and transmit them to a control station for visualisation
+QuakeSense is a project designed to measure seismic activity using a geophone and transmit the data to a control station for visualization and analysis. The system combines hardware efficiency with reliable data communication.
 
 ## Prerequisits
 
