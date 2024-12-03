@@ -17,10 +17,18 @@ def validate_crc(packet_data):
         computed_crc ^= byte
     return crc == computed_crc
 
+# Define the packet format (sensor_id, timestamp, latitude, longitude, velocity, CRC)
+PACKET_FORMAT = "B I f f f B"  # 1 byte for sensor_id, 4 bytes for timestamp, 3 floats for latitude, longitude, velocity, 1 byte for CRC
+PACKET_SIZE = struct.calcsize(PACKET_FORMAT)
+
 # Function to read the custom packet and validate CRC
 def read_packet(ser):
     data = ser.read(PACKET_SIZE)  # Read the full packet + CRC
-    if len(data) == PACKET_SIZE and validate_crc(data):
+    if len(data) != PACKET_SIZE:  # Ensure the correct size is received
+        print(f"Error: Received incomplete packet. Expected {PACKET_SIZE} bytes, got {len(data)} bytes.")
+        return None
+
+    if validate_crc(data):  # Validate the CRC
         sensor_id, timestamp, latitude, longitude, velocity = struct.unpack(PACKET_FORMAT, data[:-1])
         return {
             "sensor_id": sensor_id,
@@ -29,12 +37,10 @@ def read_packet(ser):
             "longitude": longitude,
             "velocity": velocity
         }
-    return None
-
-# Define the packet format (sensor_id, timestamp, latitude, longitude, velocity, CRC)
-PACKET_FORMAT = "B I f f f B"  # 1 byte for sensor_id, 4 bytes for timestamp, 3 floats for latitude, longitude, velocity, 1 byte for CRC
-PACKET_SIZE = struct.calcsize(PACKET_FORMAT)
-
+    else:
+        print("Error: CRC validation failed.")
+        return None
+    
 # Function to handle the port selection and start reading data
 def start_reading():
     selected_port = port_combobox.get()

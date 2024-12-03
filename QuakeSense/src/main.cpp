@@ -71,6 +71,7 @@ void sendPacket(DataPacket packet)
     uint8_t crc = calculateCRC(data, sizeof(packet));
     Serial2.write(data, sizeof(packet));
     Serial2.write(crc);  // Send CRC as the last byte
+    Serial2.flush();  // Wait for transmission to complete
 }
 
 void setup()
@@ -83,6 +84,7 @@ void setup()
   {
     // If ADC is initialized successfully
     Serial.println("ADC initialized successfully.");
+    Serial2.println("ADC initialized successfully.");
     Serial2.begin(115200);
   }
 
@@ -90,6 +92,7 @@ void setup()
   {
     // If ADC initialization fails
     Serial.println("Failed to initialize ADC.");
+    Serial2.println("Failed to initialize ADC.");    
   }
 }
 
@@ -139,6 +142,7 @@ void loop()
     else
     {
       Serial.println("GPS location not updating");
+      Serial2.println("GPS location not updating");
     }
   }
 }
