@@ -2,7 +2,6 @@ from pymavlink import mavutil
 from PySide6.QtCore import QObject, Signal, Slot, QThread
 import sys
 
-
 class MAVLinkThread(QThread):
     """Thread for handling MAVLink communication."""
 
