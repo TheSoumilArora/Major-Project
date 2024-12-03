@@ -88,8 +88,10 @@ void loop()
     doc["longitude"] = gps.location.isValid() ? gps.location.lng() : 66.21;
     doc["velocity"] = calibrated_value;
 
-    // Serialize JSON and send it over Serial2
+    // Send JSON over Serial2 with framing
     serializeJson(doc, Serial2);
+    Serial2.println('>');
+    Serial2.println('<');
     Serial2.println();
     
     // Debugging: Print JSON to Serial Monitor
