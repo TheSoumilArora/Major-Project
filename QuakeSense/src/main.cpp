@@ -3,12 +3,6 @@
  * @brief Arduino code to interface with the ADS1115 ADC module using I2C
  * communication and transmit data.
  *
- * This program initializes the ADS1115 ADC module, sets up the desired gain
- * and sampling rate, and continuously reads differential data from channels 0
- * and 1. The results are sent on Serial2. The program also reads GPS data from
- * a GPS module connected to the ESP32 and sends the data along with the sensor
- * data in JSON format.
- *
  * @author TheSoumilArora
  * @author Witty-Wizard
  * @date 2024-12-01
@@ -40,6 +34,11 @@ float voltage_divider_factor = r1 / (r1 + r2);  // Voltage divider ratio
 // Timing variables
 unsigned long last_sensor_read_time = 0; // Last time sensor data was read
 unsigned long sensor_read_interval = 10;  // Read sensor every 10ms
+
+// Define variables for GPS and interpolation
+unsigned long last_gps_time = 0;     // Last valid GPS timestamp (in milliseconds)
+unsigned long interpolated_time = 0; // Current interpolated timestamp
+unsigned long gps_interval = 0;      // Time interval between valid GPS updates
 
 void setup()
 {
@@ -79,23 +78,48 @@ void loop()
     {
         gps.encode(ss.read());  // Decode GPS data
     }
+
+    // Handle GPS time and interpolation
+    if (gps.time.isValid())
+    {
+      if (last_gps_time == 0)
+      {
+        // First GPS time received
+        last_gps_time = gps.time.value();
+        interpolated_time = last_gps_time;
+      }
+
+      else
+      {
+        // Calculate interval between GPS updates
+        gps_interval = gps.time.value() - last_gps_time;
+
+        // Set the interpolated time based on sensor_read_interval
+        interpolated_time += sensor_read_interval * (gps_interval / 1000.0);
+      }
+    }
+    
+    else
+    {
+      // Fallback if GPS time is invalid
+      interpolated_time += sensor_read_interval;
+    }
+
     // Prepare JSON object
     JsonDocument doc;
     doc["sensor_id"] = 1;
-    // doc["timestamp"] = gps.time.isValid() ? gps.time.value() : millis();  // Use system millis as fallback
-    doc["timestamp"] = 24;
-    doc["latitude"] = gps.location.isValid() ? gps.location.lat() : 23.45;
-    doc["longitude"] = gps.location.isValid() ? gps.location.lng() : 66.21;
+    doc["timestamp"] = interpolated_time;  // Use system millis as fallback
+    doc["latitude"] = gps.location.isValid() ? gps.location.lat() : 0;
+    doc["longitude"] = gps.location.isValid() ? gps.location.lng() : 0;
     doc["velocity"] = calibrated_value;
 
     // Send JSON over Serial2 with framing
+    Serial2.write(0x7E);  // Start byte for framing
     serializeJson(doc, Serial2);
-    Serial2.println('>');
-    Serial2.println('<');
-    Serial2.println();
+    Serial2.write(0x7E);  // End byte for framing
     
     // Debugging: Print JSON to Serial Monitor
-    serializeJsonPretty(doc, Serial);
-    Serial.println();
+    // serializeJsonPretty(doc, Serial);
+    // Serial.println();
     }
 }
