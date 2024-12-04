@@ -2,68 +2,55 @@ import serial
 import serial.tools.list_ports
 import json
 
-START_BYTE = 0x7E  # Frame start and end byte
-
 
 class SerialHandler:
     def __init__(self):
-        self.ser = None
+        self.serial_port = None
 
-    def get_serial_ports(self):
-        """List all available serial ports."""
+    def select_port(self):
+        """Lists available ports and selects one."""
         ports = serial.tools.list_ports.comports()
-        return [port.device for port in ports]
+        available_ports = [port.device for port in ports]
 
-    def connect(self, port, baud_rate=115200):
-        """Connect to the selected serial port."""
+        if not available_ports:
+            print("No serial ports detected.")
+            return None
+
+        print("Available Ports:")
+        for i, port in enumerate(available_ports):
+            print(f"{i}: {port}")
+
         try:
-            self.ser = serial.Serial(port, baud_rate, timeout=1)
-            print(f"Connected to {port} at {baud_rate} baud.")
+            selected_index = int(input("Select Port Number: "))
+            return available_ports[selected_index]
+        except (ValueError, IndexError):
+            print("Invalid selection.")
+            return None
+
+    def connect(self, port):
+        """Connects to the serial port."""
+        try:
+            self.serial_port = serial.Serial(port, 115200, timeout=1)
+            print(f"Connected to {port}.")
         except serial.SerialException as e:
-            print(f"Error connecting to {port}: {str(e)}")
-            self.ser = None
+            print(f"Error connecting to {port}: {e}")
+            self.serial_port = None
 
     def disconnect(self):
-        """Disconnect from the serial port."""
-        if self.ser:
-            self.ser.close()
-            print("Disconnected from the serial port.")
-            self.ser = None
+        """Disconnects the serial port."""
+        if self.serial_port:
+            self.serial_port.close()
+            print("Serial port disconnected.")
 
     def read_json_packet(self):
-        """
-        Read a framed JSON packet from the serial port.
-        The frame is enclosed between two `0x7E` bytes.
-        """
-        if not self.ser:
-            print("Serial port not connected.")
-            return None
-
+        """Reads a JSON packet with framing (~)."""
         try:
-            # Read until the start byte is detected
-            while True:
-                start_byte = self.ser.read(1)
-                if start_byte and ord(start_byte) == START_BYTE:
-                    break
-
-            # Buffer to store the incoming JSON data
-            buffer = b""
-
-            # Read data until the end byte is detected
-            while True:
-                byte = self.ser.read(1)
-                if byte and ord(byte) == START_BYTE:  # End byte detected
-                    break
-                buffer += byte
-
-            # Decode the buffer as JSON
-            try:
-                json_data = json.loads(buffer.decode('utf-8'))
-                return json_data
-            except json.JSONDecodeError:
-                print("Invalid JSON received.")
-                return None
-
-        except serial.SerialException as e:
-            print(f"Serial read error: {str(e)}")
-            return None
+            if self.serial_port:
+                line = self.serial_port.read_until(b'~').decode("utf-8").strip("~")
+                if line:
+                    return json.loads(line)
+        except json.JSONDecodeError:
+            print("Invalid JSON received.")
+        except Exception as e:
+            print(f"Error reading data: {e}")
+        return None

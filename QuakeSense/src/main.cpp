@@ -114,12 +114,12 @@ void loop()
     doc["velocity"] = calibrated_value;
 
     // Send JSON over Serial2 with framing
-    Serial2.write(0x7E);  // Start byte for framing
+    Serial2.write("~");  // Start byte for framing
     serializeJson(doc, Serial2);
-    Serial2.write(0x7E);  // End byte for framing
+    Serial2.write("~");  // End byte for framing
     
     // Debugging: Print JSON to Serial Monitor
-    // serializeJsonPretty(doc, Serial);
+    serializeJsonPretty(doc, Serial);
     // Serial.println();
     }
 }
