@@ -43,6 +43,7 @@ class RealTimePlot(QtWidgets.QWidget):
         self.data2 = deque(maxlen=self.slider.value())
         self.data3 = deque(maxlen=self.slider.value())
         self.timestamps = deque(maxlen=self.slider.value())
+        self.timestamps = sorted(self.timestamps)
 
         # Connect slider to update deque size dynamically
         self.slider.valueChanged.connect(self.update_deque_size)
@@ -68,8 +69,16 @@ class RealTimePlot(QtWidgets.QWidget):
         self.timestamps = deque(self.timestamps, maxlen=maxlen)
 
     def update_plot(self):
-        """Updates the plots."""
+        """Updates the plots and dynamically adjusts the x-axis."""
         if len(self.timestamps) > 0:
+            # Update the data for all three plots
             self.curve1.setData(self.timestamps, self.data1)
             self.curve2.setData(self.timestamps, self.data2)
             self.curve3.setData(self.timestamps, self.data3)
+
+            # Dynamically adjust the x-axis range
+            xmin = self.timestamps[0]  # Oldest timestamp
+            xmax = self.timestamps[-1]  # Most recent timestamp
+            self.plot1.setXRange(xmin, xmax, padding=0)
+            self.plot2.setXRange(xmin, xmax, padding=0)
+            self.plot3.setXRange(xmin, xmax, padding=0)
