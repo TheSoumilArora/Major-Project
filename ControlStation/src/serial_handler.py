@@ -8,20 +8,16 @@ class SerialHandler:
         self.serial_port = None
 
     def select_port(self):
-        """Lists available ports and selects one."""
         ports = serial.tools.list_ports.comports()
         available_ports = [port.device for port in ports]
-
         if not available_ports:
             print("No serial ports detected.")
             return None
-
         print("Available Ports:")
         for i, port in enumerate(available_ports):
             print(f"{i}: {port}")
-
         try:
-            selected_index = int(input("Select Port Number: "))
+            selected_index = int(input("Select port number: "))
             return available_ports[selected_index]
         except (ValueError, IndexError):
             print("Invalid selection.")
